@@ -242,11 +242,7 @@ eclass_t *Eclass_InitFromText( char *text ){
 		e->nShowFlags |= ECLASS_LIGHT;
 	}
 
-	if (  ( strnicmp( e->name, "info_player", strlen( "info_player" ) ) == 0 )
-		  || ( strnicmp( e->name, "path_corner", strlen( "path_corner" ) ) == 0 )
-		  || ( strnicmp( e->name, "team_ctf", strlen( "team_ctf" ) ) == 0 )
-		  || ( strnicmp( e->name, "misc_teleporter_dest", strlen( "misc_teleporter_dest" ) ) == 0 )
-		  ) {
+	if ( e->fixedsize ) {
 		e->nShowFlags |= ECLASS_ANGLE;
 	}
 	if ( strcmpi( e->name, "path" ) == 0 ) {
