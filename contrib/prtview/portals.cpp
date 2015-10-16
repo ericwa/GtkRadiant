@@ -152,6 +152,10 @@ void CPortals::Purge(){
 	 */
 }
 
+#define FORMAT_PRT1 1
+#define FORMAT_PRT2 2
+#define FORMAT_PRT1_AM 3
+
 void CPortals::Load(){
 	char buf[LINE_BUF + 1];
 
@@ -179,10 +183,18 @@ void CPortals::Load(){
 		return;
 	}
 
-	if ( strncmp( "PRT1", buf, 4 ) != 0 ) {
+	// also support PRT2 and PRT1-AM used in recent Quake 1 tools.
+	int format;
+	if ( !strcmp( "PRT1", buf, 4) )
+		format = FORMAT_PRT1;
+	else if ( !strcmp( "PRT2", buf, 4) )
+		format = FORMAT_PRT2;
+	else if ( !strcmp( "PRT1-AM", buf, 7) )
+		format = FORMAT_PRT1_AM
+	else {
 		fclose( in );
 
-		Sys_Printf( "  ERROR - File header indicates wrong file type (should be \"PRT1\").\n" );
+		Sys_Printf( "  ERROR - File header indicates wrong file type (should be \"PRT1\", \"PRT2\", or \"PRT1-AM\").\n" );
 
 		return;
 	}
@@ -208,6 +220,19 @@ void CPortals::Load(){
         return;
     }
  */
+
+	if (format == FORMAT_PRT2) {
+		int cluster_count;
+		if ( !fgets( buf, LINE_BUF, in ) ) {
+			fclose( in );
+
+			Sys_Printf( "  ERROR - File ended prematurely.\n" );
+
+			return;
+		}
+
+		sscanf( buf, "%u", &cluster_count );
+	}
 
 	if ( !fgets( buf, LINE_BUF, in ) ) {
 		fclose( in );
@@ -242,6 +267,21 @@ void CPortals::Load(){
 
 		return;
 	}
+
+	if (format == FORMAT_PRT1_AM) {
+		int realleafs_count;
+		if ( !fgets( buf, LINE_BUF, in ) ) {
+			fclose( in );
+
+			Sys_Printf( "  ERROR - File ended prematurely.\n" );
+
+			return;
+		}
+
+		sscanf( buf, "%u", &realleafs_count );
+	}
+
+
 
 //	node = new CBspNode[node_count];
 	portal = new CBspPortal[portal_count];
